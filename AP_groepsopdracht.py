@@ -6,14 +6,30 @@
 # to do: manier vinden om subs niet hoofdlettergevoelig / leestekengevoelig te matchen
 # to do: naam matchen
 
-import sys
+import argparse
 
 
+#def main():
+ #   '''not the final main'''
+ #   script_file = open(sys.argv[1], 'r').readlines()
+  #  with open(sys.argv[2], 'r', encoding='cp1252') as subs_file:
+   #     subs = subs_file.readlines()
+    #number_dict = make_script_dict(script_file)
+    #subs_dict = make_subs_dict(subs)
+    #subs_align(number_dict, subs_dict)
+    
 def main():
-    '''not the final main'''
-    script_file = open(sys.argv[1], 'r').readlines()
-    with open(sys.argv[2], 'r', encoding='cp1252') as subs_file:
-        subs = subs_file.readlines()
+    parser = argparse.ArgumentParser(description='Matches script with subtitles')
+    parser.add_argument('-scr', '--script', required=True,
+                        help='A file which contains the script of a movie')
+    parser.add_argument('-sub', '--subtitles', required=True,
+                        help='A file which contains the corresponding subtitles of the added script')
+    args = parser.parse_args()
+
+    with open(args.script, 'r') as script_file:
+        script_file = script_file.readlines()
+    with open(args.subtitles, 'r',encoding='cp1252') as subs:
+        subs = subs.readlines()
     number_dict = make_script_dict(script_file)
     subs_dict = make_subs_dict(subs)
     subs_align(number_dict, subs_dict)
