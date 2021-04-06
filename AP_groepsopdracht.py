@@ -52,8 +52,9 @@ def subs_align(dictionary, subs):
     for number in dictionary:
         for key in subs:
             if subs[key].lower() in dictionary[number]:
-                dictionary[number] = [dictionary[number], subs[key]]
-    print(new_dictionary)            
+                new_dictionary[number] = [dictionary[number], subs[key]]
+                del subs[key]
+    print(new_dictionary)
 
 
 if __name__ == "__main__":
