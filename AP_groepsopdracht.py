@@ -4,6 +4,7 @@
 
 import argparse
 import json
+import re
 from difflib import SequenceMatcher
 
 
@@ -20,7 +21,7 @@ def main():
     with open(args.subtitles, 'r', encoding='cp1252') as subs:
         subs = subs.readlines()
 
-    number_dict = make_script_dict(script_file)
+    number_dict = add_labels_numbers(script_file)
     subs_dict = make_subs_dict(subs)
     final_dict = subs_align(number_dict, subs_dict)
 
@@ -29,14 +30,50 @@ def main():
     print('The percentage of matching dialogue in the script and subtitles is: {0}%'.format(percentage_matching(number_dict, subs_dict)))
 
 
-def make_script_dict(script_file):
-    '''make a numbered dictionary with lines of the script'''
+def add_labels_numbers(script):
+    """Make a numbered dictionary with lines of the script and adds the matching label to each line"""
+    name = re.compile(r"^[A-Z\s]+$")
+    metadata = re.compile(r"(?:^.*\\R?){6}\\z")
+    dialogue = re.compile(r"[^\S\r\n]{8,}")
     dictionary = {}
     x = 0
-    for line in script_file:
+
+    for line in script:
         if line != '\n':
-            dictionary[x] = line.rstrip()
             x += 1
+            if name.match(line):
+                dictionary[x] = "C" + line.rstrip()
+
+            elif metadata.match(line):
+                dictionary[x] = "M" + line.rstrip()
+
+            elif dialogue.match(line):
+                dictionary[x] = "D" + line.rstrip()
+
+            elif re.search(r'\bIN\b', line):
+                dictionary[x] = "N" + line.rstrip()
+
+            elif re.search(r'\bON\b', line):
+                dictionary[x] = "N" + line.rstrip()
+
+            elif re.search(r'\bINT\b', line):
+                dictionary[x] = "N" + line.rstrip()
+
+            elif re.search(r'\bEXT\b', line):
+                dictionary[x] = "N" + line.rstrip()
+
+            elif re.search(r'\bAT\b', line):
+                dictionary[x] = "N" + line.rstrip()
+
+            elif re.search(r'\bBACK\b', line):
+                dictionary[x] = "N" + line.rstrip()
+
+            elif re.search(r'\bUNDER\b', line):
+                dictionary[x] = "N" + line.rstrip()
+
+            else:
+                if len(line) != 0:
+                    dictionary[x] = "S" + line.rstrip()
     return(dictionary)
 
 
