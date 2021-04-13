@@ -3,9 +3,11 @@
 
 import sys
 import re
-		
+
+
 def add_labels_numbers(script):
-    """Make a numbered dictionary with lines of the script and adds the matching label to each line""" 
+    """Make a numbered dictionary with lines of the script 
+    and add the matching label to each line""" 
     name = re.compile( r"^[A-Z\s]+$" )
     metadata = re.compile(r"(?:^.*\\R?){10}\\z")#(r"\(a-z*\)")
     dialogue = re.compile("[^\S\r\n]{8,}")    
@@ -41,22 +43,24 @@ def add_labels_numbers(script):
             
             elif  re.search(r'\bBACK\b', line): 
                 dictionary[x] = "N" + line.rstrip()
-                
+
             elif  re.search(r'\bUNDER\b', line): 
                 dictionary[x] = "N" + line.rstrip()
-            
-            else: 
+
+            else:
                 if len(line) != 0:
                     dictionary[x] = "S" + line.rstrip()
-    return(dictionary)                
+    return(dictionary)
+
 
 def main(argv):
     infilename = argv[1]
     infile = open(infilename,'r')
     script = infile.readlines()
-    
+
     output = add_labels(script)
     print(output)
-    
+
+
 if __name__ == "__main__":
     main(sys.argv)

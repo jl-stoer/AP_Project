@@ -1,14 +1,10 @@
 # AP_groepsopdracht.py
-# for elke regel in script
-# elke regel in subs: zit line subs in line script? (niet hoofdlettergevoelig / leestekengevoelig?)
-# als ie in script zit: stop hem in dictionary, previous-line ook in dict (timestamp)
-# to do: manier vinden om subs niet leestekengevoelig te matchen
 # to do: matchen met D lines (na merge)
-# lines van subs meerdere keren gematcht
 # to do: summarize differences
 
 import argparse
 import json
+from difflib import SequenceMatcher
 
 
 def main():
@@ -23,13 +19,14 @@ def main():
         script_file = script_file.readlines()
     with open(args.subtitles, 'r', encoding='cp1252') as subs:
         subs = subs.readlines()
-    
+
     number_dict = make_script_dict(script_file)
     subs_dict = make_subs_dict(subs)
     final_dict = subs_align(number_dict, subs_dict)
-    
-    json_output = json.dumps(final_dict, indent = 3)  
-    print(json_output) 
+
+    json_output = json.dumps(final_dict, indent=3)
+    print(json_output)
+    print('The percentage of matching dialogue in the script and subtitles is: {0}%'.format(percentage_matching(number_dict, subs_dict)))
 
 
 def make_script_dict(script_file):
@@ -44,7 +41,7 @@ def make_script_dict(script_file):
 
 
 def make_subs_dict(subs):
-    '''make a dictionary of a subs file, including its timestamps'''
+    '''make a dictionary of a subs file, using its timestamps as keys'''
     subs_dict = {}
     timestamp = ""
     prev_line = ""
@@ -63,16 +60,26 @@ def make_subs_dict(subs):
 def subs_align(dictionary, subs):
     '''match lines of the subtitles with script lines and
     add them to the dictionary along with their timestamps'''
-    # memory inefficiency used_subs & ervoor zorgen dat timestamps oplopend
-    # gematcht worden, daarna alles naar main dict doen
     new_dictionary = {}
-    used_subs = []
+    prev_time = 0
     for number in dictionary:
         for key in subs:
-            if subs[key].lower() in dictionary[number].lower() and subs[key] not in used_subs:
+            key.replace('<i>', '')
+            key.replace('</i>', '')
+            time = int(key[0:8].replace(':', ''))
+            if subs[key].lower() in dictionary[number].lower() and time > prev_time:
                 new_dictionary[number] = [dictionary[number], key, subs[key]]
-                used_subs += subs[key]
+                prev_time = time
     return new_dictionary
+
+
+def percentage_matching(dictionary, subs):
+    '''check what percentage of dialogue matches between
+    the script and the subtitles'''
+    script_dialogue = dictionary #alle zinnen die gelabeld zijn als D
+    subs_dialogue = subs.values()
+    matching_percentage = 0#SequenceMatcher(None, dictionary, subs).ratio()
+    return matching_percentage
 
 
 if __name__ == "__main__":
