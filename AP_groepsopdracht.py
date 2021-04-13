@@ -1,6 +1,5 @@
 # AP_groepsopdracht.py
 # to do: matchen met D lines (na merge)
-# to do: summarize differences
 
 import argparse
 import json
@@ -70,10 +69,10 @@ def add_labels_numbers(script):
 
             elif re.search(r'\bUNDER\b', line):
                 dictionary[x] = "N" + line.rstrip()
-
             else:
                 if len(line) != 0:
                     dictionary[x] = "S" + line.rstrip()
+
     return(dictionary)
 
 
@@ -92,7 +91,7 @@ def make_subs_dict(subs):
                 subs_dict[timestamp.rstrip()] = prev_line + " " + line.rstrip()
             else:
                 subs_dict[timestamp.rstrip()] = line.rstrip()
-        prev_line = line.rstrip()  
+        prev_line = line.rstrip()
     return subs_dict
 
 
@@ -113,11 +112,18 @@ def subs_align(dictionary, subs):
 def percentage_matching(dictionary, subs):
     '''check what percentage of dialogue matches between
     the script and the subtitles'''
-    script_dialogue = dictionary #alle zinnen die gelabeld zijn als D
-    subs_dialogue = subs.values()
-    matching_percentage = 0#SequenceMatcher(None, dictionary, subs).ratio()
-    return matching_percentage
- 
+    script_dialogue = ''
+    for key in dictionary:
+        if dictionary[key][0] == 'D':
+            script_dialogue = script_dialogue + ' ' + dictionary[key].lower()
+
+    subs_dialogue = ''
+    for key in subs:
+        subs_dialogue = subs_dialogue + ' ' + subs[key].lower()
+
+    matching_percentage = SequenceMatcher(None, script_dialogue, subs_dialogue).ratio()
+    return round(matching_percentage * 100, 2)
+
 
 if __name__ == "__main__":
     main()
