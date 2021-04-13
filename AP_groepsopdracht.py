@@ -46,6 +46,8 @@ def make_subs_dict(subs):
     timestamp = ""
     prev_line = ""
     for line in subs:
+        left_italics = line.replace('<i>', '')
+        line = left_italics.replace('</i>', '')
         if '-->' in line:
             timestamp = line
         if line != '\n' and '-->' not in line and line.rstrip().isnumeric() is False:
@@ -53,7 +55,7 @@ def make_subs_dict(subs):
                 subs_dict[timestamp.rstrip()] = prev_line + " " + line.rstrip()
             else:
                 subs_dict[timestamp.rstrip()] = line.rstrip()
-        prev_line = line.rstrip()
+        prev_line = line.rstrip()  
     return subs_dict
 
 
@@ -64,8 +66,6 @@ def subs_align(dictionary, subs):
     prev_time = 0
     for number in dictionary:
         for key in subs:
-            key.replace('<i>', '')
-            key.replace('</i>', '')
             time = int(key[0:8].replace(':', ''))
             if subs[key].lower() in dictionary[number].lower() and time > prev_time:
                 new_dictionary[number] = [dictionary[number], key, subs[key]]
@@ -80,7 +80,7 @@ def percentage_matching(dictionary, subs):
     subs_dialogue = subs.values()
     matching_percentage = 0#SequenceMatcher(None, dictionary, subs).ratio()
     return matching_percentage
-
+ 
 
 if __name__ == "__main__":
     main()
