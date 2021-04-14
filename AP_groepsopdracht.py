@@ -27,7 +27,7 @@ def main():
 
     json_output = json.dumps(final_dict, indent=3)
     print(json_output)
-    print('The percentage of matching'
+    print('The percentage of matching '
           'dialogue in the script and subtitles is: {0}%'
           .format(percentage_matching(number_dict, subs_dict)))
 
