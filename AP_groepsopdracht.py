@@ -1,5 +1,4 @@
 # AP_groepsopdracht.py
-# to do: matchen met D lines (na merge)
 
 import argparse
 import json
@@ -100,12 +99,18 @@ def subs_align(dictionary, subs):
     add them to the dictionary along with their timestamps'''
     new_dictionary = {}
     prev_time = 0
+    character_name = ''
     for number in dictionary:
-        for key in subs:
-            time = int(key[0:8].replace(':', ''))
-            if subs[key].lower() in dictionary[number].lower() and time > prev_time:
-                new_dictionary[number] = [dictionary[number], key, subs[key]]
-                prev_time = time
+        if dictionary[number][0] == 'C':
+            character_name = dictionary[number]
+        if dictionary[number][0] == 'D':
+            for key in subs:
+                time = int(key[0:8].replace(':', ''))
+                if subs[key].lower() in dictionary[number].lower() and time > prev_time and time - prev_time < 500:
+                    new_dictionary[number] = [dictionary[number], key, subs[key], character_name]
+                    prev_time = time
+        if number not in new_dictionary:
+            new_dictionary[number] = dictionary[number]
     return new_dictionary
 
 
@@ -115,7 +120,7 @@ def percentage_matching(dictionary, subs):
     script_dialogue = ''
     for key in dictionary:
         if dictionary[key][0] == 'D':
-            script_dialogue = script_dialogue + ' ' + dictionary[key].lower()
+            script_dialogue = script_dialogue + ' ' + dictionary[key][17:].lower()
 
     subs_dialogue = ''
     for key in subs:
